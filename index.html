@@ -1,0 +1,1489 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yandex Music Clone PRO</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Arial, sans-serif;
+        }
+        
+        :root {
+            --primary: #FF2E00;
+            --dark: #121212;
+            --gray-dark: #282828;
+            --gray: #B3B3B3;
+            --light: #FFFFFF;
+            --sidebar-width: 240px;
+            --player-height: 90px;
+        }
+        
+        body {
+            background-color: var(--dark);
+            color: var(--light);
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+        
+        /* Сайдбар */
+        .sidebar {
+            width: var(--sidebar-width);
+            background-color: #000000;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            z-index: 100;
+        }
+        
+        .logo {
+            font-size: 28px;
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .logo i {
+            font-size: 32px;
+        }
+        
+        .nav-section {
+            margin-bottom: 25px;
+        }
+        
+        .nav-title {
+            color: var(--gray);
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+        }
+        
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 10px 15px;
+            border-radius: 8px;
+            color: var(--gray);
+            text-decoration: none;
+            margin-bottom: 5px;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        
+        .nav-item:hover, .nav-item.active {
+            background-color: var(--gray-dark);
+            color: var(--light);
+        }
+        
+        .nav-item i {
+            width: 20px;
+            text-align: center;
+        }
+        
+        /* Основной контент */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .header {
+            padding: 20px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: rgba(0, 0, 0, 0.5);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+        
+        .search-bar {
+            background-color: var(--gray-dark);
+            border-radius: 20px;
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            width: 400px;
+            position: relative;
+        }
+        
+        .search-bar input {
+            background: transparent;
+            border: none;
+            color: var(--light);
+            font-size: 16px;
+            width: 100%;
+            outline: none;
+        }
+        
+        .search-results {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background-color: var(--gray-dark);
+            border-radius: 8px;
+            margin-top: 10px;
+            max-height: 400px;
+            overflow-y: auto;
+            display: none;
+            z-index: 1000;
+        }
+        
+        .search-result-item {
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        
+        .search-result-item:hover {
+            background-color: #383838;
+        }
+        
+        .search-result-cover {
+            width: 40px;
+            height: 40px;
+            border-radius: 4px;
+            background: linear-gradient(45deg, var(--primary), #FF6B00);
+        }
+        
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, var(--primary), #FF6B00);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        /* Контент */
+        .content {
+            padding: 20px 30px;
+            overflow-y: auto;
+            flex: 1;
+            padding-bottom: calc(var(--player-height) + 20px);
+        }
+        
+        .section-title {
+            font-size: 24px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .see-all {
+            color: var(--gray);
+            font-size: 14px;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        
+        .see-all:hover {
+            color: var(--light);
+            text-decoration: underline;
+        }
+        
+        .playlist-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        
+        .playlist-card {
+            background-color: var(--gray-dark);
+            border-radius: 8px;
+            padding: 15px;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        
+        .playlist-card:hover {
+            background-color: #383838;
+            transform: translateY(-5px);
+        }
+        
+        .playlist-cover {
+            width: 100%;
+            aspect-ratio: 1/1;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .playlist-cover img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .play-button {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: all 0.3s;
+        }
+        
+        .playlist-card:hover .play-button {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .playlist-title {
+            font-size: 16px;
+            margin-bottom: 5px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .playlist-desc {
+            font-size: 14px;
+            color: var(--gray);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        /* Таблица треков */
+        .tracks-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 40px;
+        }
+        
+        .tracks-table th {
+            text-align: left;
+            padding: 10px;
+            color: var(--gray);
+            font-weight: normal;
+            border-bottom: 1px solid #333;
+        }
+        
+        .tracks-table td {
+            padding: 10px;
+            border-bottom: 1px solid #333;
+        }
+        
+        .track-row {
+            transition: background-color 0.2s;
+            cursor: pointer;
+        }
+        
+        .track-row:hover {
+            background-color: #282828;
+        }
+        
+        .track-row.playing {
+            background-color: rgba(255, 46, 0, 0.1);
+        }
+        
+        .track-number {
+            width: 50px;
+            text-align: center;
+        }
+        
+        .track-title {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .track-cover-small {
+            width: 40px;
+            height: 40px;
+            border-radius: 4px;
+        }
+        
+        .track-duration {
+            color: var(--gray);
+        }
+        
+        /* Страница альбома */
+        .album-header {
+            display: flex;
+            gap: 30px;
+            margin-bottom: 30px;
+            align-items: flex-end;
+        }
+        
+        .album-cover-large {
+            width: 240px;
+            height: 240px;
+            border-radius: 8px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+        }
+        
+        .album-info {
+            flex: 1;
+        }
+        
+        .album-title {
+            font-size: 48px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .album-artist {
+            font-size: 18px;
+            color: var(--gray);
+            margin-bottom: 20px;
+        }
+        
+        /* Плеер */
+        .player {
+            background-color: var(--gray-dark);
+            padding: 15px 30px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-top: 1px solid #333;
+            height: var(--player-height);
+            position: fixed;
+            bottom: 0;
+            left: var(--sidebar-width);
+            right: 0;
+            z-index: 100;
+        }
+        
+        .now-playing {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            width: 25%;
+        }
+        
+        .track-cover {
+            width: 60px;
+            height: 60px;
+            border-radius: 4px;
+        }
+        
+        .track-info {
+            flex: 1;
+        }
+        
+        .track-title {
+            font-size: 16px;
+            margin-bottom: 5px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .track-artist {
+            font-size: 14px;
+            color: var(--gray);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .player-controls {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 50%;
+        }
+        
+        .control-buttons {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 10px;
+        }
+        
+        .control-btn {
+            background: none;
+            border: none;
+            color: var(--light);
+            font-size: 20px;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.2s;
+        }
+        
+        .control-btn:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        .play-btn {
+            background-color: var(--light);
+            color: var(--dark);
+            font-size: 24px;
+        }
+        
+        .play-btn:hover {
+            transform: scale(1.05);
+            background-color: var(--light);
+        }
+        
+        .progress-bar {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .time {
+            font-size: 14px;
+            color: var(--gray);
+            min-width: 40px;
+        }
+        
+        .progress-container {
+            flex: 1;
+            height: 4px;
+            background-color: #555;
+            border-radius: 2px;
+            cursor: pointer;
+            position: relative;
+        }
+        
+        .progress {
+            height: 100%;
+            background-color: var(--primary);
+            border-radius: 2px;
+            width: 30%;
+        }
+        
+        .volume-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            width: 25%;
+            justify-content: flex-end;
+        }
+        
+        /* Страницы */
+        .page {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .page.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        /* Адаптивность */
+        @media (max-width: 1200px) {
+            .sidebar {
+                width: 80px;
+                padding: 20px 10px;
+            }
+            
+            .nav-item span, .nav-title, .logo-text {
+                display: none;
+            }
+            
+            .logo {
+                justify-content: center;
+            }
+            
+            .player {
+                left: 80px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .search-bar {
+                width: 200px;
+            }
+            
+            .playlist-grid {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            }
+            
+            .player {
+                flex-direction: column;
+                gap: 15px;
+                padding: 15px;
+                height: auto;
+                left: 0;
+            }
+            
+            .now-playing, .player-controls, .volume-controls {
+                width: 100%;
+            }
+            
+            .album-header {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+            
+            .album-cover-large {
+                width: 200px;
+                height: 200px;
+            }
+        }
+        
+        /* Уведомление */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: var(--primary);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 8px;
+            display: none;
+            z-index: 1000;
+            animation: slideIn 0.3s ease;
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Сайдбар -->
+    <div class="sidebar">
+        <div class="logo">
+            <i class="fas fa-music"></i>
+            <span class="logo-text">Яндекс.Музыка</span>
+        </div>
+        
+        <div class="nav-section">
+            <div class="nav-title">Основное</div>
+            <div class="nav-item active" data-page="home">
+                <i class="fas fa-home"></i>
+                <span>Главная</span>
+            </div>
+            <div class="nav-item" data-page="search">
+                <i class="fas fa-search"></i>
+                <span>Поиск</span>
+            </div>
+            <div class="nav-item" data-page="library">
+                <i class="fas fa-book"></i>
+                <span>Моя медиатека</span>
+            </div>
+            <div class="nav-item" data-page="radio">
+                <i class="fas fa-broadcast-tower"></i>
+                <span>Радио</span>
+            </div>
+        </div>
+        
+        <div class="nav-section">
+            <div class="nav-title">Плейлисты</div>
+            <div class="nav-item" data-page="liked">
+                <i class="fas fa-heart"></i>
+                <span>Любимые треки</span>
+            </div>
+            <div class="nav-item" data-page="playlists">
+                <i class="fas fa-list"></i>
+                <span>Мои плейлисты</span>
+            </div>
+            <div class="nav-item" data-page="top">
+                <i class="fas fa-chart-line"></i>
+                <span>Топ-чарты</span>
+            </div>
+            <div class="nav-item" data-page="genres">
+                <i class="fas fa-guitar"></i>
+                <span>Жанры</span>
+            </div>
+        </div>
+        
+        <div class="nav-section">
+            <div class="nav-title">Настройки</div>
+            <div class="nav-item" data-page="settings">
+                <i class="fas fa-cog"></i>
+                <span>Настройки</span>
+            </div>
+            <div class="nav-item" data-page="profile">
+                <i class="fas fa-user"></i>
+                <span>Профиль</span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Основной контент -->
+    <div class="main-content">
+        <!-- Шапка -->
+        <div class="header">
+            <div class="search-bar">
+                <i class="fas fa-search" style="color: var(--gray);"></i>
+                <input type="text" id="searchInput" placeholder="Искать треки, исполнителей, альбомы">
+                <div class="search-results" id="searchResults"></div>
+            </div>
+            
+            <div class="user-menu">
+                <button class="control-btn" id="notificationBtn">
+                    <i class="fas fa-bell"></i>
+                </button>
+                <div class="user-avatar" data-page="profile">И</div>
+            </div>
+        </div>
+        
+        <!-- Уведомление -->
+        <div class="notification" id="notification"></div>
+        
+        <!-- Страницы -->
+        <div class="content">
+            <!-- Главная страница -->
+            <div class="page active" id="home-page">
+                <h2 class="section-title">Добрый день, Иван!</h2>
+                
+                <div class="playlist-grid">
+                    <!-- Плейлисты -->
+                    <div class="playlist-card" data-album="chill">
+                        <div class="playlist-cover">
+                            <img src="https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80" alt="Chill Vibes">
+                            <div class="play-button">
+                                <i class="fas fa-play"></i>
+                            </div>
+                        </div>
+                        <h3 class="playlist-title">Chill Vibes</h3>
+                        <p class="playlist-desc">Расслабляющие треки</p>
+                    </div>
+                    
+                    <div class="playlist-card" data-album="rock">
+                        <div class="playlist-cover">
+                            <img src="https://images.unsplash.com/photo-1511379938547-c1f69419868d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80" alt="Rock Classics">
+                            <div class="play-button">
+                                <i class="fas fa-play"></i>
+                            </div>
+                        </div>
+                        <h3 class="playlist-title">Rock Classics</h3>
+                        <p class="playlist-desc">Лучшее рока</p>
+                    </div>
+                    
+                    <div class="playlist-card" data-album="electronic">
+                        <div class="playlist-cover">
+                            <img src="https://images.unsplash.com/photo-1470225620780-dba8ba36b745?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80" alt="Electronic">
+                            <div class="play-button">
+                                <i class="fas fa-play"></i>
+                            </div>
+                        </div>
+                        <h3 class="playlist-title">Electronic Beats</h3>
+                        <p class="playlist-desc">Электронная музыка</p>
+                    </div>
+                </div>
+                
+                <h2 class="section-title">
+                    Недавно прослушано
+                    <span class="see-all" data-page="history">Смотреть всё</span>
+                </h2>
+                
+                <table class="tracks-table" id="recent-tracks">
+                    <thead>
+                        <tr>
+                            <th class="track-number">#</th>
+                            <th>Название</th>
+                            <th>Альбом</th>
+                            <th>Дата</th>
+                            <th><i class="far fa-clock"></i></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Заполняется JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Страница поиска -->
+            <div class="page" id="search-page">
+                <h2 class="section-title">Поиск</h2>
+                <div id="search-content">
+                    <p style="color: var(--gray);">Начните вводить запрос в поисковой строке выше</p>
+                </div>
+            </div>
+            
+            <!-- Страница радио -->
+            <div class="page" id="radio-page">
+                <h2 class="section-title">Радиостанции</h2>
+                <div class="playlist-grid">
+                    <div class="playlist-card" data-radio="chill">
+                        <div class="playlist-cover" style="background: linear-gradient(135deg, #4A00E0, #8E2DE2);">
+                            <div class="play-button">
+                                <i class="fas fa-play"></i>
+                            </div>
+                        </div>
+                        <h3 class="playlist-title">Chill Radio</h3>
+                        <p class="playlist-desc">Лёгкая музыка</p>
+                    </div>
+                    
+                    <div class="playlist-card" data-radio="rock">
+                        <div class="playlist-cover" style="background: linear-gradient(135deg, #FF2E00, #FF8A00);">
+                            <div class="play-button">
+                                <i class="fas fa-play"></i>
+                            </div>
+                        </div>
+                        <h3 class="playlist-title">Rock Radio</h3>
+                        <p class="playlist-desc">Классика рока</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Страница настроек -->
+            <div class="page" id="settings-page">
+                <h2 class="section-title">Настройки</h2>
+                <div style="max-width: 600px;">
+                    <div style="background: var(--gray-dark); padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+                        <h3 style="margin-bottom: 15px;">Качество звука</h3>
+                        <div style="display: flex; gap: 20px; align-items: center;">
+                            <label style="display: flex; align-items: center; gap: 10px;">
+                                <input type="radio" name="quality" checked> Высокое (320 kbps)
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 10px;">
+                                <input type="radio" name="quality"> Среднее (192 kbps)
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div style="background: var(--gray-dark); padding: 20px; border-radius: 8px;">
+                        <h3 style="margin-bottom: 15px;">Темная тема</h3>
+                        <label style="display: flex; align-items: center; justify-content: space-between;">
+                            <span>Включить темную тему</span>
+                            <input type="checkbox" id="darkTheme" checked style="transform: scale(1.5);">
+                        </label>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Страница профиля -->
+            <div class="page" id="profile-page">
+                <div class="album-header">
+                    <div class="album-cover-large" style="background: linear-gradient(135deg, #FF2E00, #FF8A00); display: flex; align-items: center; justify-content: center; font-size: 60px;">
+                        И
+                    </div>
+                    <div class="album-info">
+                        <h1 class="album-title">Иван Иванов</h1>
+                        <p class="album-artist">Premium подписка</p>
+                        <div style="display: flex; gap: 15px; margin-top: 20px;">
+                            <button class="control-btn play-btn" style="padding: 12px 30px; border-radius: 20px;">
+                                <i class="fas fa-play"></i> Слушать
+                            </button>
+                            <button class="control-btn" style="border: 1px solid var(--gray); padding: 12px 30px; border-radius: 20px;">
+                                Редактировать профиль
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <h2 class="section-title">Любимые треки</h2>
+                <table class="tracks-table">
+                    <thead>
+                        <tr>
+                            <th class="track-number">#</th>
+                            <th>Название</th>
+                            <th>Альбом</th>
+                            <th>Дата добавления</th>
+                            <th><i class="far fa-clock"></i></th>
+                        </tr>
+                    </thead>
+                    <tbody id="profile-tracks">
+                        <!-- Заполняется JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Страница альбома/плейлиста -->
+            <div class="page" id="album-page">
+                <!-- Заполняется динамически -->
+            </div>
+        </div>
+        
+        <!-- Плеер -->
+        <div class="player">
+            <div class="now-playing">
+                <div class="track-cover" id="currentCover"></div>
+                <div class="track-info">
+                    <div class="track-title" id="currentTitle">Выберите трек</div>
+                    <div class="track-artist" id="currentArtist">Нажмите на любой трек</div>
+                </div>
+                <button class="control-btn" id="likeBtn">
+                    <i class="far fa-heart"></i>
+                </button>
+            </div>
+            
+            <div class="player-controls">
+                <div class="control-buttons">
+                    <button class="control-btn" onclick="changeTrack(-1)">
+                        <i class="fas fa-step-backward"></i>
+                    </button>
+                    <button class="control-btn play-btn" onclick="togglePlay()" id="playBtn">
+                        <i class="fas fa-play" id="playIcon"></i>
+                    </button>
+                    <button class="control-btn" onclick="changeTrack(1)">
+                        <i class="fas fa-step-forward"></i>
+                    </button>
+                </div>
+                
+                <div class="progress-bar">
+                    <span class="time" id="currentTime">0:00</span>
+                    <div class="progress-container" onclick="setProgress(event)">
+                        <div class="progress" id="progressBar"></div>
+                    </div>
+                    <span class="time" id="totalTime">0:00</span>
+                </div>
+            </div>
+            
+            <div class="volume-controls">
+                <button class="control-btn" onclick="toggleQueue()">
+                    <i class="fas fa-list"></i>
+                </button>
+                <button class="control-btn" onclick="toggleMute()" id="volumeBtn">
+                    <i class="fas fa-volume-up"></i>
+                </button>
+                <div class="progress-container" style="width: 100px;" onclick="setVolume(event)">
+                    <div class="progress" id="volumeBar" style="width: 70%;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Аудио элемент -->
+    <audio id="audioPlayer" preload="metadata"></audio>
+
+    <script>
+        // База данных треков
+        const musicLibrary = {
+            tracks: [
+                {
+                    id: 1,
+                    title: "Bohemian Rhapsody",
+                    artist: "Queen",
+                    album: "A Night at the Opera",
+                    genre: "Rock",
+                    duration: 354,
+                    year: 1975,
+                    url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
+                    cover: "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80"
+                },
+                {
+                    id: 2,
+                    title: "Smells Like Teen Spirit",
+                    artist: "Nirvana",
+                    album: "Nevermind",
+                    genre: "Grunge",
+                    duration: 301,
+                    year: 1991,
+                    url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3",
+                    cover: "https://images.unsplash.com/photo-1511379938547-c1f69419868d?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80"
+                },
+                {
+                    id: 3,
+                    title: "Billie Jean",
+                    artist: "Michael Jackson",
+                    album: "Thriller",
+                    genre: "Pop",
+                    duration: 294,
+                    year: 1982,
+                    url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3",
+                    cover: "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80"
+                },
+                {
+                    id: 4,
+                    title: "Stairway to Heaven",
+                    artist: "Led Zeppelin",
+                    album: "Led Zeppelin IV",
+                    genre: "Rock",
+                    duration: 482,
+                    year: 1971,
+                    url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3",
+                    cover: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80"
+                },
+                {
+                    id: 5,
+                    title: "Shape of You",
+                    artist: "Ed Sheeran",
+                    album: "÷",
+                    genre: "Pop",
+                    duration: 233,
+                    year: 2017,
+                    url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3",
+                    cover: "https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80"
+                },
+                {
+                    id: 6,
+                    title: "Blinding Lights",
+                    artist: "The Weeknd",
+                    album: "After Hours",
+                    genre: "R&B",
+                    duration: 200,
+                    year: 2019,
+                    url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-6.mp3",
+                    cover: "https://images.unsplash.com/photo-1516280440614-37939bbacd81?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80"
+                },
+                {
+                    id: 7,
+                    title: "Take On Me",
+                    artist: "a-ha",
+                    album: "Hunting High and Low",
+                    genre: "Synth-pop",
+                    duration: 225,
+                    year: 1985,
+                    url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-7.mp3",
+                    cover: "https://images.unsplash.com/photo-1518609878373-06d740f60d8b?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80"
+                },
+                {
+                    id: 8,
+                    title: "Hotel California",
+                    artist: "Eagles",
+                    album: "Hotel California",
+                    genre: "Rock",
+                    duration: 391,
+                    year: 1977,
+                    url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3",
+                    cover: "https://images.unsplash.com/photo-1511735111819-9a3f7709049c?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80"
+                }
+            ],
+            playlists: [
+                {
+                    id: "chill",
+                    title: "Chill Vibes",
+                    description: "Расслабляющие треки",
+                    tracks: [1, 3, 5, 6],
+                    cover: "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80"
+                },
+                {
+                    id: "rock",
+                    title: "Rock Classics",
+                    description: "Лучшее рока",
+                    tracks: [1, 2, 4, 8],
+                    cover: "https://images.unsplash.com/photo-1511379938547-c1f69419868d?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80"
+                },
+                {
+                    id: "electronic",
+                    title: "Electronic Beats",
+                    description: "Электронная музыка",
+                    tracks: [3, 5, 6, 7],
+                    cover: "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80"
+                }
+            ],
+            likedTracks: [1, 2, 4, 6],
+            recentTracks: [1, 3, 5, 2, 6]
+        };
+
+        // Глобальные переменные
+        let currentTrackIndex = 0;
+        let isPlaying = false;
+        let currentPlaylist = [];
+        let likedTracks = new Set(musicLibrary.likedTracks);
+        let recentTracks = [...musicLibrary.recentTracks];
+        let currentVolume = 0.7;
+        let isMuted = false;
+        let audio = document.getElementById('audioPlayer');
+        let queue = [];
+
+        // Инициализация
+        document.addEventListener('DOMContentLoaded', function() {
+            audio.volume = currentVolume;
+            loadRecentTracks();
+            loadProfileTracks();
+            
+            // Навигация
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    const pageId = this.getAttribute('data-page');
+                    showPage(pageId);
+                    
+                    // Обновление активного элемента
+                    document.querySelectorAll('.nav-item').forEach(i => {
+                        i.classList.remove('active');
+                    });
+                    this.classList.add('active');
+                });
+            });
+            
+            // Поиск
+            document.getElementById('searchInput').addEventListener('input', function(e) {
+                performSearch(e.target.value);
+            });
+            
+            // Клики по плейлистам
+            document.querySelectorAll('.playlist-card').forEach(card => {
+                card.addEventListener('click', function() {
+                    const albumId = this.getAttribute('data-album');
+                    if (albumId) {
+                        showAlbumPage(albumId);
+                    }
+                });
+            });
+            
+            // Уведомления
+            document.getElementById('notificationBtn').addEventListener('click', function() {
+                showNotification('У вас 3 новых уведомления');
+            });
+            
+            // Инициализация первого трека
+            currentPlaylist = musicLibrary.tracks.map(track => track.id);
+            if (currentPlaylist.length > 0) {
+                loadTrack(currentPlaylist[0]);
+            }
+        });
+
+        // Показать страницу
+        function showPage(pageId) {
+            // Скрыть все страницы
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+            
+            // Показать выбранную страницу
+            const page = document.getElementById(pageId + '-page');
+            if (page) {
+                page.classList.add('active');
+                
+                // Специальная логика для некоторых страниц
+                if (pageId === 'search') {
+                    document.getElementById('searchInput').focus();
+                }
+            }
+        }
+
+        // Поиск
+        function performSearch(query) {
+            const resultsContainer = document.getElementById('searchResults');
+            const searchContent = document.getElementById('search-content');
+            
+            if (query.length < 2) {
+                resultsContainer.style.display = 'none';
+                searchContent.innerHTML = '<p style="color: var(--gray);">Начните вводить запрос в поисковой строке выше</p>';
+                return;
+            }
+            
+            const searchTerm = query.toLowerCase();
+            const results = {
+                tracks: [],
+                artists: [],
+                albums: []
+            };
+            
+            // Поиск по трекам
+            musicLibrary.tracks.forEach(track => {
+                if (track.title.toLowerCase().includes(searchTerm) || 
+                    track.artist.toLowerCase().includes(searchTerm) ||
+                    track.album.toLowerCase().includes(searchTerm) ||
+                    track.genre.toLowerCase().includes(searchTerm)) {
+                    results.tracks.push(track);
+                }
+            });
+            
+            // Показать результаты в выпадающем списке
+            resultsContainer.innerHTML = '';
+            
+            if (results.tracks.length > 0) {
+                results.tracks.slice(0, 5).forEach(track => {
+                    const item = document.createElement('div');
+                    item.className = 'search-result-item';
+                    item.innerHTML = `
+                        <div class="search-result-cover" style="background-image: url('${track.cover}'); background-size: cover;"></div>
+                        <div>
+                            <div style="font-weight: bold;">${track.title}</div>
+                            <div style="color: var(--gray); font-size: 14px;">${track.artist}</div>
+                        </div>
+                    `;
+                    item.addEventListener('click', () => {
+                        playTrackById(track.id);
+                        resultsContainer.style.display = 'none';
+                        document.getElementById('searchInput').value = '';
+                    });
+                    resultsContainer.appendChild(item);
+                });
+                resultsContainer.style.display = 'block';
+            } else {
+                resultsContainer.style.display = 'none';
+            }
+            
+            // Показать результаты на странице поиска
+            if (document.getElementById('search-page').classList.contains('active')) {
+                let html = `<h3 style="margin-bottom: 20px;">Результаты поиска: "${query}"</h3>`;
+                
+                if (results.tracks.length > 0) {
+                    html += '<h4 style="margin: 20px 0 10px;">Треки</h4>';
+                    results.tracks.forEach(track => {
+                        html += `
+                            <div class="track-row" style="padding: 10px; border-radius: 8px; margin-bottom: 5px; background: var(--gray-dark);" onclick="playTrackById(${track.id})">
+                                <div style="display: flex; align-items: center; gap: 15px;">
+                                    <img src="${track.cover}" style="width: 50px; height: 50px; border-radius: 4px;">
+                                    <div>
+                                        <div style="font-weight: bold;">${track.title}</div>
+                                        <div style="color: var(--gray);">${track.artist} • ${track.album}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    });
+                } else {
+                    html += '<p style="color: var(--gray);">Ничего не найдено</p>';
+                }
+                
+                searchContent.innerHTML = html;
+            }
+        }
+
+        // Воспроизвести трек по ID
+        function playTrackById(trackId) {
+            const trackIndex = currentPlaylist.indexOf(trackId);
+            if (trackIndex !== -1) {
+                currentTrackIndex = trackIndex;
+            } else {
+                currentPlaylist = [trackId];
+                currentTrackIndex = 0;
+            }
+            loadTrack(trackId);
+            togglePlay();
+            
+            // Добавить в историю
+            if (!recentTracks.includes(trackId)) {
+                recentTracks.unshift(trackId);
+                if (recentTracks.length > 10) recentTracks.pop();
+                loadRecentTracks();
+            }
+        }
+
+        // Загрузить трек
+        function loadTrack(trackId) {
+            const track = musicLibrary.tracks.find(t => t.id === trackId);
+            if (!track) return;
+            
+            audio.src = track.url;
+            
+            // Обновить интерфейс
+            document.getElementById('currentTitle').textContent = track.title;
+            document.getElementById('currentArtist').textContent = track.artist;
+            document.getElementById('currentCover').style.backgroundImage = `url('${track.cover}')`;
+            document.getElementById('currentCover').style.backgroundSize = 'cover';
+            document.getElementById('totalTime').textContent = formatTime(track.duration);
+            
+            // Обновить кнопку лайка
+            const likeBtn = document.getElementById('likeBtn');
+            likeBtn.innerHTML = likedTracks.has(trackId) ? 
+                '<i class="fas fa-heart" style="color: var(--primary);"></i>' : 
+                '<i class="far fa-heart"></i>';
+                
+            // Подсветить текущий трек в таблицах
+            highlightCurrentTrack(trackId);
+        }
+
+        // Переключение воспроизведения
+        function togglePlay() {
+            if (audio.src) {
+                if (isPlaying) {
+                    audio.pause();
+                } else {
+                    audio.play().catch(e => {
+                        showNotification('Ошибка воспроизведения: ' + e.message);
+                    });
+                }
+                isPlaying = !isPlaying;
+                updatePlayButton();
+            }
+        }
+
+        // Обновить кнопку воспроизведения
+        function updatePlayButton() {
+            const playIcon = document.getElementById('playIcon');
+            const playBtn = document.getElementById('playBtn');
+            
+            if (isPlaying) {
+                playIcon.className = 'fas fa-pause';
+                playBtn.style.backgroundColor = 'var(--primary)';
+                playBtn.style.color = 'white';
+            } else {
+                playIcon.className = 'fas fa-play';
+                playBtn.style.backgroundColor = 'white';
+                playBtn.style.color = 'black';
+            }
+        }
+
+        // Следующий/предыдущий трек
+        function changeTrack(direction) {
+            if (currentPlaylist.length === 0) return;
+            
+            currentTrackIndex += direction;
+            
+            if (currentTrackIndex < 0) {
+                currentTrackIndex = currentPlaylist.length - 1;
+            } else if (currentTrackIndex >= currentPlaylist.length) {
+                currentTrackIndex = 0;
+            }
+            
+            loadTrack(currentPlaylist[currentTrackIndex]);
+            if (isPlaying) {
+                audio.play();
+            }
+        }
+
+        // Форматирование времени
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = Math.floor(seconds % 60);
+            return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+        }
+
+        // Показать страницу альбома
+        function showAlbumPage(albumId) {
+            const playlist = musicLibrary.playlists.find(p => p.id === albumId);
+            if (!playlist) return;
+            
+            // Обновить текущий плейлист
+            currentPlaylist = playlist.tracks;
+            currentTrackIndex = 0;
+            
+            // Показать страницу альбома
+            const albumPage = document.getElementById('album-page');
+            albumPage.innerHTML = `
+                <div class="album-header">
+                    <img src="${playlist.cover}" class="album-cover-large">
+                    <div class="album-info">
+                        <div style="color: var(--gray); margin-bottom: 10px;">ПЛЕЙЛИСТ</div>
+                        <h1 class="album-title">${playlist.title}</h1>
+                        <p class="album-artist">${playlist.description}</p>
+                        <div style="display: flex; align-items: center; gap: 10px; margin-top: 20px; color: var(--gray);">
+                            <span>Яндекс.Музыка</span>
+                            <span>•</span>
+                            <span>${playlist.tracks.length} треков</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div style="margin: 30px 0;">
+                    <button class="control-btn play-btn" onclick="playTrackById(${playlist.tracks[0]})" style="padding: 15px 30px; border-radius: 20px; font-size: 18px;">
+                        <i class="fas fa-play"></i> Слушать
+                    </button>
+                </div>
+                
+                <h2 class="section-title">Треки</h2>
+                <table class="tracks-table">
+                    <thead>
+                        <tr>
+                            <th class="track-number">#</th>
+                            <th>Название</th>
+                            <th>Альбом</th>
+                            <th>Дата добавления</th>
+                            <th><i class="far fa-clock"></i></th>
+                        </tr>
+                    </thead>
+                    <tbody id="album-tracks">
+                        ${playlist.tracks.map((trackId, index) => {
+                            const track = musicLibrary.tracks.find(t => t.id === trackId);
+                            if (!track) return '';
+                            return `
+                                <tr class="track-row" onclick="playTrackById(${track.id})">
+                                    <td class="track-number">${index + 1}</td>
+                                    <td>
+                                        <div class="track-title">
+                                            <img src="${track.cover}" class="track-cover-small">
+                                            <div>
+                                                <div style="font-weight: bold;">${track.title}</div>
+                                                <div style="color: var(--gray); font-size: 14px;">${track.artist}</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>${track.album}</td>
+                                    <td>1 месяц назад</td>
+                                    <td class="track-duration">${formatTime(track.duration)}</td>
+                                </tr>
+                            `;
+                        }).join('')}
+                    </tbody>
+                </table>
+            `;
+            
+            showPage('album');
+        }
+
+        // Загрузить недавние треки
+        function loadRecentTracks() {
+            const tbody = document.querySelector('#recent-tracks tbody');
+            tbody.innerHTML = recentTracks.map((trackId, index) => {
+                const track = musicLibrary.tracks.find(t => t.id === trackId);
+                if (!track) return '';
+                return `
+                    <tr class="track-row" onclick="playTrackById(${track.id})">
+                        <td class="track-number">${index + 1}</td>
+                        <td>
+                            <div class="track-title">
+                                <img src="${track.cover}" class="track-cover-small">
+                                <div>
+                                    <div style="font-weight: bold;">${track.title}</div>
+                                    <div style="color: var(--gray); font-size: 14px;">${track.artist}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>${track.album}</td>
+                        <td>Сегодня</td>
+                        <td class="track-duration">${formatTime(track.duration)}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // Загрузить треки профиля
+        function loadProfileTracks() {
+            const tbody = document.getElementById('profile-tracks');
+            tbody.innerHTML = musicLibrary.likedTracks.map((trackId, index) => {
+                const track = musicLibrary.tracks.find(t => t.id === trackId);
+                if (!track) return '';
+                return `
+                    <tr class="track-row" onclick="playTrackById(${track.id})">
+                        <td class="track-number">${index + 1}</td>
+                        <td>
+                            <div class="track-title">
+                                <img src="${track.cover}" class="track-cover-small">
+                                <div>
+                                    <div style="font-weight: bold;">${track.title}</div>
+                                    <div style="color: var(--gray); font-size: 14px;">${track.artist}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>${track.album}</td>
+                        <td>2 недели назад</td>
+                        <td class="track-duration">${formatTime(track.duration)}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // Подсветить текущий трек
+        function highlightCurrentTrack(trackId) {
+            document.querySelectorAll('.track-row').forEach(row => {
+                row.classList.remove('playing');
+            });
+            
+            // Найти и подсветить строку с текущим треком
+            const rows = document.querySelectorAll('.track-row');
+            rows.forEach(row => {
+                if (row.onclick && row.onclick.toString().includes(trackId)) {
+                    row.classList.add('playing');
+                }
+            });
+        }
+
+        // Показать уведомление
+        function showNotification(message) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.style.display = 'block';
+            
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 3000);
+        }
+
+        // Управление громкостью
+        function setVolume(event) {
+            const container = event.currentTarget;
+            const rect = container.getBoundingClientRect();
+            const percent = (event.clientX - rect.left) / rect.width;
+            
+            currentVolume = Math.max(0, Math.min(1, percent));
+            audio.volume = currentVolume;
+            document.getElementById('volumeBar').style.width = `${currentVolume * 100}%`;
+            
+            if (currentVolume > 0 && isMuted) {
+                isMuted = false;
+                document.getElementById('volumeBtn').innerHTML = '<i class="fas fa-volume-up"></i>';
+            }
+        }
+
+        function toggleMute() {
+            isMuted = !isMuted;
+            if (isMuted) {
+                audio.volume = 0;
+                document.getElementById('volumeBtn').innerHTML = '<i class="fas fa-volume-mute"></i>';
+            } else {
+                audio.volume = currentVolume;
+                document.getElementById('volumeBtn').innerHTML = '<i class="fas fa-volume-up"></i>';
+            }
+        }
+
+        // Обновление прогресса
+        audio.addEventListener('timeupdate', function() {
+            const progressPercent = (audio.currentTime / audio.duration) * 100;
+            document.getElementById('progressBar').style.width = `${progressPercent}%`;
+            
+            document.getElementById('currentTime').textContent = formatTime(audio.currentTime);
+        });
+
+        audio.addEventListener('ended', function() {
+            changeTrack(1);
+        });
+
+        audio.addEventListener('loadedmetadata', function() {
+            document.getElementById('totalTime').textContent = formatTime(audio.duration);
+        });
+
+        // Установка прогресса при клике
+        function setProgress(event) {
+            const container = event.currentTarget;
+            const rect = container.getBoundingClientRect();
+            const percent = (event.clientX - rect.left) / rect.width;
+            
+            if (audio.duration) {
+                audio.currentTime = percent * audio.duration;
+            }
+        }
+
+        // Лайк трека
+        document.getElementById('likeBtn').addEventListener('click', function() {
+            const currentTrackId = currentPlaylist[currentTrackIndex];
+            if (likedTracks.has(currentTrackId)) {
+                likedTracks.delete(currentTrackId);
+                this.innerHTML = '<i class="far fa-heart"></i>';
+                showNotification('Удалено из любимых');
+            } else {
+                likedTracks.add(currentTrackId);
+                this.innerHTML = '<i class="fas fa-heart" style="color: var(--primary);"></i>';
+                showNotification('Добавлено в любимые');
+            }
+            loadProfileTracks();
+        });
+
+        // Очередь (заглушка)
+        function toggleQueue() {
+            showNotification('Очередь воспроизведения (в разработке)');
+        }
+    </script>
+</body>
+</html>
